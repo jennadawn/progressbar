@@ -1,4 +1,7 @@
-#lang scheme
+#lang racket
+
+;; Library that provides a "progressbar-for-status" function.
+(provide progressbar-for-status)
 
 (define makelist
   (lambda (x n)
@@ -35,4 +38,4 @@
   (lambda (status)
     (progressbar (projectstatus status))))
 
-                                                      
+                                                   
