@@ -1,7 +1,11 @@
 #lang racket
 
+
+(require "database.rkt")
+
 ;; Library that provides a "progressbar-for-status" function.
 (provide progressbar-for-status)
+(provide projectstatus)   
 
 (define makelist
   (lambda (x n)
@@ -29,13 +33,21 @@
   (lambda (status)
     (cond
       ((eq? status "open") 0)
-      ((eq? status "seeking-lead") 25)
-      ((eq? status "volunteers") 50) 
+      ((eq? status "seeking-benevolent-leader") 25)
+      ((eq? status "seeking-volunteers") 50) 
       ((eq? status "in-progress") 75)
-      ((eq? status "shipped") 100))))
+      ((eq? status "shipped") 100)
+      ((eq? status "unknown") 0))))
 
 (define progressbar-for-status
   (lambda (status)
     (progressbar (projectstatus status))))
 
-                                                   
+(define project-name 
+  (lambda (project-name) 
+      (hash-ref main-database "project-name")))
+  
+;; (define progressbar-for-project
+;;  (lambda (project-name)
+;;    (progressbar-for-project (project-name projectstatus))))
+      
