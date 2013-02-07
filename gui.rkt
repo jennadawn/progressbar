@@ -33,4 +33,4 @@
 ; Make a static text message in the frame
 
 
-(send frame show #t)
+(send frame show #f)

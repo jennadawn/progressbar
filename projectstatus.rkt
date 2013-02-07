@@ -4,11 +4,12 @@
 (require "database.rkt")
 (require "gui.rkt")
 
+
 (define frame
   (new frame%
-       [style (list 'metal)]
-       [label "Example"]
-       [width 800]))
+       [style (list 'metal)] 
+       [label "Project Page"]
+       [width 700]))
 
 (define panel
   (new horizontal-panel%
@@ -59,7 +60,6 @@
 
 (define add-project-to-database
   (λ ()
-;; how is it calling an empty list? 
    (let ((project-name (send project-name-text get-value)) 
          (location (send location-text get-value))) 
      (new-project project-name location)
@@ -72,74 +72,75 @@
             (add-project-to-database))])
   
 ;; how do I create one callback for two text-fields? 
-
- (define project-status-callback 
-  (λ (project-name)
-    (λ (create progressbar)
-      (send r-msg set-label
-            (progressbar-for-status (get-status-for-project project-name))))))
  
-;  wrong! 
-; (define project-status-callback
-;  (λ (project-name status)
-;    (λ (create progressbar)
-;      (send r-msg set-label
-;            (let ((status-from-database (get-status-for-project project-name)))
-;              (progressbar-for-status status=from-database))))))  
+; set current project is a function that takes a project name and holds it until another project button is clicked on. 
+   ; create a new database for this temp project name?
+
+(define current-project-database (make-hash))
+ 
+(define current-project-deets
+  (λ (project-name)
+    (make-hash 
+     (list
+      (cons "current-project" project-name)))))
+
+(define set-current-project 
+  (λ (project-name)
+   (hash-set! current-project-database "current-project" project-name)))
+   
+(define make-project-callback 
+  (λ (project-name)
+    (λ (button event)
+      (set-current-project project-name)
+      (send r-msg set-label (progressbar-for-status (get-status-for-project project-name))))))
 
 (define make-project-button%
   (λ (project-name)
     (new button%
          [parent m-panel] 
          [label project-name]
-         [callback (project-status-callback project-name)])))
+         [callback (make-project-callback project-name)])))
 
 (make-project-button% "kindsource")
-(make-project-button% "men-of-revenue-calendar")
+(make-project-button% "men of revenue calendar")
 (make-project-button% "milk-the-goat")
 (make-project-button% "malware for good")
 
+
+; get current project takes the project name from the set current project function and finds it's status in the project-database 
+
+                   
 (new message%
          [parent r-panel] 
          [label "progressbar"])
  
-(new-project "men-of-revenue-calendar" "7th-floor")
+(new-project "men of revenue calendar" "7th-floor")
 (new-project "kindsource" "sf") 
 (new-project "milk-the-goat" "pescadero") 
-(new-project "malware for good" "knox's-closet")
+(new-project "malware for good" "knox's closet")
 
-(define make-callback
-  (λ (status) 
-    (λ (button event)
-      (send r-msg set-label 
-            (progressbar-for-status status)
-            ())))
+(define get-current-project 
+  (λ ()
+   (hash-ref current-project-database "current-project")))
+ 
+(define make-status-callback
+  (λ (status)
+    (λ (button event) 
+       (set-status-for-project (get-current-project) status)
+       (send r-msg set-label (progressbar-for-status status)))))
 
-; need a function that makes make-project-button% action speak with set-status-button%. 
-
-(define reset-status
-  (λ (project-name status)
-    (λ (button event)
-      (send r-msg set-label 
-          (set-status-for-project project-name status)))))
-    
 (define set-status-button%
   (λ (status)
     (new button%
          [parent r-panel] 
-         [label status] 
-         [callback (make-callback status)])))
-
-(define change-project-status 
-  (λ (set-status-button% new-status)
-    (change-project-status (set-status-for-project new-status))))
-
+         [label status]
+         [callback (make-status-callback status)])))
+ 
 (set-status-button% "open")
 (set-status-button% "seeking-benevolent-leader")
 (set-status-button% "seeking-volunteers")
 (set-status-button% "in-progress")
 (set-status-button% "shipped")
-
 
     
 (send frame show #t)

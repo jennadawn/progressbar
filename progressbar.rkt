@@ -23,7 +23,7 @@
 
 (define progressbar
   (lambda (n)
-    (string-append (repeatstring "X" n)
+    (string-append (repeatstring "/" n)
                    (repeatstring "-" (- 100 n)))))
 
 ;; There are four stages a project can sit at along the road to completion:
@@ -43,11 +43,8 @@
   (lambda (status)
     (progressbar (projectstatus status))))
 
-(define project-name 
+(define get-project-name 
   (lambda (project-name) 
-      (hash-ref main-database "project-name")))
-  
-;; (define progressbar-for-project
-;;  (lambda (project-name)
-;;    (progressbar-for-project (project-name projectstatus))))
+      (hash-ref main-database project-name)))
+
       

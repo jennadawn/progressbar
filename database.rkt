@@ -26,9 +26,9 @@
 
 ;; Use to put key-value pairs into the database:
 (define set-status-for-project
-  (lambda (project-name new-status)
+  (lambda (project-name status)
      (let ((project-database (hash-ref main-database project-name)))
-       (hash-set! project-database "status" new-status))))
+       (hash-set! project-database "status" status))))
 
 
 ;; Use this to get a value out of the database for a specific key:
